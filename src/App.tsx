@@ -22,9 +22,10 @@ import {
   HeartOutlined,
   HeartFilled,
   CodeOutlined,
-  DeleteOutlined,
   DownloadOutlined,
   BgColorsOutlined,
+  FolderOpenOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import { ArrowLeft, Cuboid } from "lucide-react";
@@ -82,6 +83,8 @@ interface SavedSVG {
   date: string;
   name?: string;
   signature?: string;
+  groupId?: string;
+  groupName?: string;
 }
 
 export default function App() {
@@ -92,7 +95,10 @@ export default function App() {
   const [rawResults, setRawResults] = useState<Record<string, string>>({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [inversions, setInversions] = useState<Record<string, boolean>>({});
-  const [savedSignatures, setSavedSignatures] = useState<Set<string>>(new Set());
+  const [savedSignatures, setSavedSignatures] = useState<Set<string>>(
+    new Set(),
+  );
+  const [currentGroupId, setCurrentGroupId] = useState<string>("");
 
   const [is3DPrintMode, setIs3DPrintMode] = useState(false);
   const [nozzleSize, setNozzleSize] = useState("0.4");
@@ -187,10 +193,10 @@ export default function App() {
 
   const toggleFavorite = (filterId: string, name: string) => {
     const signature = `${filterId}-${!!inversions[filterId]}`;
-    
+
     if (savedSignatures.has(signature)) {
-      setSavedSvgs(prev => prev.filter(s => s.signature !== signature));
-      setSavedSignatures(prev => {
+      setSavedSvgs((prev) => prev.filter((s) => s.signature !== signature));
+      setSavedSignatures((prev) => {
         const next = new Set(prev);
         next.delete(signature);
         return next;
@@ -205,7 +211,9 @@ export default function App() {
         svg: svg,
         date: new Date().toISOString(),
         name: name,
-        signature: signature
+        signature: signature,
+        groupId: currentGroupId,
+        groupName: `Sorgente del ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
       };
       setSavedSvgs([newSvg, ...savedSvgs]);
       setSavedSignatures((prev) => new Set(prev).add(signature));
@@ -214,10 +222,10 @@ export default function App() {
   };
 
   const removeFavorite = (id: string) => {
-    setSavedSvgs(prev => {
-      const item = prev.find(s => s.id === id);
+    setSavedSvgs((prev) => {
+      const item = prev.find((s) => s.id === id);
       if (item && item.signature) {
-        setSavedSignatures(sigs => {
+        setSavedSignatures((sigs) => {
           const next = new Set(sigs);
           next.delete(item.signature!);
           return next;
@@ -251,6 +259,7 @@ export default function App() {
         setImageUrl(e.target?.result as string);
         setRawResults({});
         setSavedSignatures(new Set());
+        setCurrentGroupId(Date.now().toString());
       };
       reader.readAsDataURL(file);
       return false;
@@ -495,14 +504,25 @@ export default function App() {
                           icon={<CodeOutlined />}
                         />
                       </Tooltip>,
-                      <Tooltip key="save" title={isSaved ? "Rimuovi dai Preferiti" : "Salva nei Preferiti"}>
+                      <Tooltip
+                        key="save"
+                        title={
+                          isSaved
+                            ? "Rimuovi dai Preferiti"
+                            : "Salva nei Preferiti"
+                        }
+                      >
                         <Button
                           type="text"
                           disabled={!finalSvg}
-                          onClick={() =>
-                            toggleFavorite(filter.id, filter.name)
+                          onClick={() => toggleFavorite(filter.id, filter.name)}
+                          icon={
+                            isSaved ? (
+                              <HeartFilled style={{ color: "#ff4d4f" }} />
+                            ) : (
+                              <HeartOutlined />
+                            )
                           }
-                          icon={isSaved ? <HeartFilled style={{ color: "#ff4d4f" }} /> : <HeartOutlined />}
                         />
                       </Tooltip>,
                       <Tooltip key="download" title="Scarica">
@@ -582,85 +602,148 @@ export default function App() {
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             ) : (
-              <List
-                grid={{ gutter: 24, xs: 1, sm: 2, md: 3, lg: 3, xl: 3, xxl: 3 }}
-                dataSource={savedSvgs}
-                renderItem={(item) => (
-                  <List.Item>
-                    <Card
-                      style={{
-                        background: "#fafafa",
-                        borderColor: "#e8e8e8",
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                      }}
-                      bodyStyle={{ padding: 0 }}
-                      actions={[
-                        <Tooltip key="download" title="Scarica">
-                          <Button
-                            type="text"
-                            icon={<DownloadOutlined />}
-                            onClick={() =>
-                              downloadSvg(item.svg, `favorite-${item.id}.svg`)
-                            }
-                            style={{ color: "#4caf50" }}
-                          />
-                        </Tooltip>,
-                        <Popconfirm
-                          key="delete"
-                          title="Elimina preferito"
-                          description="Sei sicuro di voler rimuovere questo SVG?"
-                          onConfirm={() => removeFavorite(item.id)}
-                          okText="Ok"
-                          cancelText="Annulla"
-                          placement="top"
-                        >
-                          <Tooltip title="Rimuovi">
-                            <Button
-                              type="text"
-                              danger
-                              icon={<DeleteOutlined />}
-                            />
-                          </Tooltip>
-                        </Popconfirm>,
-                      ]}
-                    >
-                      <div
+              <div>
+                {Object.values(
+                  savedSvgs.reduce(
+                    (acc, svg) => {
+                      const gid = svg.groupId || "old_favorites";
+                      if (!acc[gid])
+                        acc[gid] = {
+                          id: gid,
+                          name: svg.groupName || "Raccolta precedente",
+                          items: [],
+                        };
+                      acc[gid].items.push(svg);
+                      return acc;
+                    },
+                    {} as Record<
+                      string,
+                      { id: string; name: string; items: SavedSVG[] }
+                    >,
+                  ),
+                )
+                  .sort((a, b) => Number(b.id) - Number(a.id))
+                  .map((group) => (
+                    <div key={group.id} style={{ marginBottom: "40px" }}>
+                      <Title
+                        level={5}
                         style={{
-                          background: "#ffffff",
-                          height: "180px",
                           display: "flex",
-                          justifyContent: "center",
                           alignItems: "center",
-                          padding: "16px",
+                          gap: "8px",
+                          color: "#1a1f2e",
                           borderBottom: "1px solid #e8e8e8",
-                          overflow: "hidden",
-                          cursor: "pointer",
+                          paddingBottom: "12px",
+                          marginBottom: "20px",
                         }}
-                        onClick={() =>
-                          setPreviewImage({ type: "svg", src: item.svg })
-                        }
-                        dangerouslySetInnerHTML={{ __html: item.svg }}
+                      >
+                        <FolderOpenOutlined
+                          style={{ color: "#2c77fb", fontSize: "20px" }}
+                        />
+                        Cartella: {group.name}
+                      </Title>
+                      <List
+                        grid={{
+                          gutter: 24,
+                          xs: 1,
+                          sm: 2,
+                          md: 3,
+                          lg: 3,
+                          xl: 3,
+                          xxl: 3,
+                        }}
+                        dataSource={group.items}
+                        renderItem={(item) => (
+                          <List.Item>
+                            <Card
+                              style={{
+                                background: "#fafafa",
+                                borderColor: "#e8e8e8",
+                                borderRadius: "12px",
+                                overflow: "hidden",
+                              }}
+                              bodyStyle={{ padding: 0 }}
+                              actions={[
+                                <Tooltip key="download" title="Scarica">
+                                  <Button
+                                    type="text"
+                                    icon={<DownloadOutlined />}
+                                    onClick={() =>
+                                      downloadSvg(
+                                        item.svg,
+                                        `favorite-${item.id}.svg`,
+                                      )
+                                    }
+                                    style={{ color: "#4caf50" }}
+                                  />
+                                </Tooltip>,
+                                <Popconfirm
+                                  key="delete"
+                                  title="Elimina preferito"
+                                  description="Sei sicuro di voler rimuovere questo SVG?"
+                                  onConfirm={() => removeFavorite(item.id)}
+                                  okText="Ok"
+                                  cancelText="Annulla"
+                                  placement="top"
+                                >
+                                  <Tooltip title="Rimuovi">
+                                    <Button
+                                      type="text"
+                                      danger
+                                      icon={<DeleteOutlined />}
+                                    />
+                                  </Tooltip>
+                                </Popconfirm>,
+                              ]}
+                            >
+                              <div
+                                style={{
+                                  background: "#ffffff",
+                                  height: "180px",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  padding: "16px",
+                                  borderBottom: "1px solid #e8e8e8",
+                                  overflow: "hidden",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  setPreviewImage({
+                                    type: "svg",
+                                    src: item.svg,
+                                  })
+                                }
+                                dangerouslySetInnerHTML={{ __html: item.svg }}
+                              />
+                              <div
+                                style={{ padding: "12px", textAlign: "center" }}
+                              >
+                                <Text
+                                  strong
+                                  style={{
+                                    display: "block",
+                                    marginBottom: "4px",
+                                    color: "#000",
+                                  }}
+                                >
+                                  {item.name || "SVG Salvato"}
+                                </Text>
+                                <Text
+                                  type="secondary"
+                                  style={{ fontSize: "12px" }}
+                                >
+                                  Salvato il{" "}
+                                  {new Date(item.date).toLocaleDateString()}
+                                </Text>
+                              </div>
+                            </Card>
+                          </List.Item>
+                        )}
                       />
-                      <div style={{ padding: "12px", textAlign: "center" }}>
-                        <Text
-                          strong
-                          style={{
-                            display: "block",
-                            marginBottom: "4px",
-                            color: "#000",
-                          }}
-                        >
-                          {item.name || "SVG Salvato"}
-                        </Text>
-                        <Text type="secondary" style={{ fontSize: "12px" }}>
-                          Salvato il {new Date(item.date).toLocaleDateString()}
-                        </Text>
-                      </div>
-                    </Card>
-                  </List.Item>
-                )}
-              />
+                    </div>
+                  ))}
+              </div>
             )}
           </Card>
         </div>
