@@ -1,15 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2c77fb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#7b2cfb;stop-opacity:1" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <linearGradient id="gem" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="24" fill="url(#grad)"/>
-  <!-- VectoForge V -->
-  <path d="M 28 32 L 50 70 L 72 32" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Nodi Vettoriali -->
-  <circle cx="28" cy="32" r="6" fill="white"/>
-  <circle cx="50" cy="70" r="6" fill="white"/>
-  <circle cx="72" cy="32" r="6" fill="white"/>
+  <rect width="100" height="100" rx="24" fill="url(#bg)"/>
+  
+  <!-- Gancio alto (Earring hook) -->
+  <path d="M 46 15 C 46 10, 54 10, 54 15 L 52 40 C 52 44, 48 44, 48 40 Z" fill="#94a3b8"/>
+  <circle cx="50" cy="43" r="3" fill="#64748b"/>
+  
+  <!-- Anellino (Ring) -->
+  <circle cx="50" cy="49" r="5" fill="none" stroke="#cbd5e1" stroke-width="2.5"/>
+  
+  <!-- Gemma a goccia (Teardrop gem base) -->
+  <path d="M 50 55 C 68 70, 68 90, 50 90 C 32 90, 32 70, 50 55 Z" fill="url(#gem)"/>
+  
+  <!-- Sfaccettatura centrale (Faceted center mimicking the star inside) -->
+  <polygon points="50,60 58,75 50,85 42,75" fill="#7dd3fc" opacity="0.9"/>
+  
+  <!-- Riflessi sfaccettati laterali -->
+  <polygon points="50,55 64,75 58,75 50,60" fill="#bae6fd" opacity="0.6"/>
+  <polygon points="50,55 36,75 42,75 50,60" fill="#0284c7" opacity="0.5"/>
+  
+  <!-- Piccolo riflesso curvo in basso per dare volume -->
+  <path d="M 42 84 C 47 88, 53 88, 58 84 C 53 86, 47 86, 42 84 Z" fill="#ffffff" opacity="0.7"/>
+
+  <!-- Scintilla magica (Cute sparkle) -->
+  <path d="M 35 65 Q 39 65 39 61 Q 39 65 43 65 Q 39 65 39 69 Q 39 65 35 65 Z" fill="#ffffff"/>
 </svg>
