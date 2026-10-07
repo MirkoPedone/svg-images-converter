@@ -1,26 +1,112 @@
+/* Base Typography and Layout */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Upload Area (Make it soft and inviting) */
+.ant-upload.ant-upload-drag {
+  background: #f4f7fe !important;
+  border: 2px dashed #bcccfe !important;
+  border-radius: 24px !important;
+  transition: all 0.3s ease;
+}
+.ant-upload.ant-upload-drag:hover {
+  border-color: #2c77fb !important;
+  background: #ebf0ff !important;
+}
+.dark-mode .ant-upload.ant-upload-drag {
+  background: #1a1f2e !important;
+  border-color: #2a3450 !important;
+}
+
+/* Image Containers */
+.image-container {
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+.image-container:hover {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08) !important;
+}
+.dark-mode .image-container {
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Toolbar Control Bubble */
+.toolbar-controls {
+  background: #f0f4ff;
+  padding: 8px 20px;
+  border-radius: 100px; /* pill shape */
+}
+.dark-mode .toolbar-controls {
+  background: #252b3b;
+}
+
+/* Buttons */
+.ant-btn {
+  border-radius: 8px;
+}
+.download-btn {
+  border-radius: 100px !important;
+  font-weight: 600;
+  padding: 0 24px !important;
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.25) !important;
+  border: none !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.35) !important;
+}
+
+/* SVG Rendering */
 .checkerboard-bg {
   background-image: 
-    linear-gradient(45deg, #ccc 25%, transparent 25%), 
-    linear-gradient(135deg, #ccc 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #ccc 75%),
-    linear-gradient(135deg, transparent 75%, #ccc 75%);
+    linear-gradient(45deg, #e8e8e8 25%, transparent 25%), 
+    linear-gradient(135deg, #e8e8e8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e8e8e8 75%),
+    linear-gradient(135deg, transparent 75%, #e8e8e8 75%);
   background-size: 20px 20px;
   background-position: 0 0, 10px 0, 10px -10px, 0px 10px;
 }
+.dark-mode .checkerboard-bg {
+  background-image: 
+    linear-gradient(45deg, #2a2a2a 25%, transparent 25%), 
+    linear-gradient(135deg, #2a2a2a 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
+    linear-gradient(135deg, transparent 75%, #2a2a2a 75%);
+}
 
-/* Ensure SVG resizes properly inside container */
-.checkerboard-bg svg,
-.checkerboard-bg > div > svg {
-  max-width: 100%;
-  max-height: 100%;
+.svg-content-wrapper svg {
+  width: 100%;
   height: auto;
+  max-height: 100%;
+  display: block;
+  margin: auto;
 }
 
-.action-buttons .ant-btn {
-  color: inherit;
+.three-col-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
 }
 
-.toolbar-controls .ant-select-selector,
-.toolbar-controls .ant-color-picker-trigger {
-  border-radius: 4px;
+@media (max-width: 1024px) {
+  .three-col-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
+@media (max-width: 768px) {
+  .three-col-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
