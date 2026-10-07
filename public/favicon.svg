@@ -22,15 +22,15 @@
   <path d="M 50 55 C 68 70, 68 90, 50 90 C 32 90, 32 70, 50 55 Z" fill="url(#gem)"/>
   
   <!-- Sfaccettatura centrale (Faceted center mimicking the star inside) -->
-  <polygon points="50,60 58,75 50,85 42,75" fill="#7dd3fc" opacity="0.9"/>
+  <polygon points="50,60 55,75 50,83 45,75" fill="#7dd3fc" opacity="0.9"/>
   
   <!-- Riflessi sfaccettati laterali -->
-  <polygon points="50,55 64,75 58,75 50,60" fill="#bae6fd" opacity="0.6"/>
-  <polygon points="50,55 36,75 42,75 50,60" fill="#0284c7" opacity="0.5"/>
+  <polygon points="50,55 60,75 55,75 50,60" fill="#bae6fd" opacity="0.6"/>
+  <polygon points="50,55 40,75 45,75 50,60" fill="#0284c7" opacity="0.5"/>
   
   <!-- Piccolo riflesso curvo in basso per dare volume -->
-  <path d="M 42 84 C 47 88, 53 88, 58 84 C 53 86, 47 86, 42 84 Z" fill="#ffffff" opacity="0.7"/>
+  <path d="M 43 85 C 47 88, 53 88, 57 85 C 53 86.5, 47 86.5, 43 85 Z" fill="#ffffff" opacity="0.7"/>
 
   <!-- Scintilla magica (Cute sparkle) -->
-  <path d="M 35 65 Q 39 65 39 61 Q 39 65 43 65 Q 39 65 39 69 Q 39 65 35 65 Z" fill="#ffffff"/>
+  <path d="M 40 62 Q 43 62 43 59 Q 43 62 46 62 Q 43 62 43 65 Q 43 62 40 62 Z" fill="#ffffff"/>
 </svg>
